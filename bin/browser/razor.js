@@ -99,8 +99,8 @@ extend(HtmlHelper.prototype, {
 	encode: encode,
 	attributeEncode: encode,
 	raw: htmlString,
-	renderPartial: function (view, model, page) {
-		return htmlString(Razor.view(view)(model, page || this.page));
+	renderPartial: function (view, Model, page) {
+		return htmlString(Razor.view(view)(Model, page || this.page));
 	}
 });
 var Reader = (function () {
@@ -281,7 +281,7 @@ extend(Cmd.prototype, {
 var _function_template_basic = 'var writer = [], writeLiteral = function(a) { writer.push(a); }, write = function(a){ writeLiteral(html.encode(a)); };\n';
 var _function_template = 
 	_function_template_basic + 
-	'var page = this, model = page.model, viewBag = this.viewBag, html = this.html,\n' + 
+	'var page = this, Model = page.Model, viewBag = this.viewBag, html = this.html,\n' + 
 	'	isSectionDefined = this.isSectionDefined ? bind(this.isSectionDefined, this) : undefined,\n' +
 	'	renderSection = this.renderSection ? bind(this.renderSection, this) : undefined,\n' +
 	'	renderBody = this.renderBody ? bind(this.renderBody, this) : undefined,\n' +
@@ -477,15 +477,15 @@ function compile(code, page) {
 		}
 	}
 	
-	return function execute(model, page1, cb) {
+	return function execute(Model, page1, cb) {
 		if(!cb && typeof page1 === 'function') {
-			return execute(model, null, page1);
+			return execute(Model, null, page1);
 		}
 		
 		var ctx = extend(new Razor.BasePage(), page, page1), sections = {};
-		ctx.model = model;
+		ctx.Model = Model;
 		ctx.html.page = ctx;
-		ctx.html.model = model;
+		ctx.html.Model = Model;
 	
 		var result = func.apply(ctx, [bind, sections]);
 
@@ -569,9 +569,9 @@ Razor = {
 		}
 	},
 	HtmlHelper: HtmlHelper,
-	render: function (markup, model, page, cb) {
+	render: function (markup, Model, page, cb) {
 		var result;
-		compile(markup)(model, page, function(html) {
+		compile(markup)(Model, page, function(html) {
 			result = html;
 			if(cb) cb(result);
 		});
